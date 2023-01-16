@@ -5,6 +5,7 @@ import { PrismaService } from '../src/prisma/prisma.service';
 import { AppModule } from '../src/app.module';
 import * as pactum from 'pactum';
 import { AuthDTO } from '../src/auth/dto';
+import { EditUserDTO } from 'src/user/dto';
 
 describe('App e2e', () => {
   let app: NestApplication;
@@ -110,7 +111,25 @@ describe('App e2e', () => {
           .inspect();
       });
     });
-    describe('edit user', () => {});
+    describe('edit user', () => {
+      const dto: EditUserDTO = {
+        firstName: 'Shashwat',
+        lastName: 'Singh',
+      };
+      it('should update the user details', () => {
+        return pactum
+          .spec()
+          .patch('/users')
+          .withHeaders({
+            Authorization: 'Bearer $S{userAccessToken}',
+          })
+          .withBody(dto)
+          .expectStatus(200)
+          .expectBodyContains(dto.firstName)
+          .expectBodyContains(dto.lastName)
+          .inspect();
+      });
+    });
   });
   afterAll(() => {
     app.close();
